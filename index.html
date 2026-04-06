@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Проверка безопасности</title>
+    <style>
+        body { 
+            background-color: #ffffff; 
+            margin: 0; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            font-family: Roboto, Arial, sans-serif; 
+        }
+
+        /* Стиль фейковой капчи Google */
+        .captcha-box {
+            width: 300px;
+            height: 74px;
+            background: #f9f9f9;
+            border: 1px solid #d3d3d3;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            cursor: pointer;
+            box-shadow: 0 0 4px rgba(0,0,0,0.1);
+        }
+        .captcha-box:hover { border-color: #b2b2b2; }
+        
+        .checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #c1c1c1;
+            border-radius: 2px;
+            background: #fff;
+            margin-right: 15px;
+            position: relative;
+        }
+        
+        .text { color: #000; font-size: 14px; flex-grow: 1; }
+        
+        .logo-section { text-align: center; }
+        .logo-section img { width: 32px; display: block; margin: 0 auto 5px; }
+        .logo-section span { font-size: 10px; color: #555; }
+
+        /* Экран пранка */
+        #prank-screen { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: red; z-index: 9999; justify-content: center; align-items: center; 
+        }
+        #p-text { 
+            color: white; font-size: 40px; font-weight: 900; text-align: center; 
+            text-transform: uppercase; animation: blink 0.1s infinite; padding: 10px;
+        }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <div class="captcha-box" id="captcha" onclick="activateTrap()">
+        <div class="checkbox" id="check"></div>
+        <div class="text">Я не робот</div>
+        <div class="logo-section">
+            <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" alt="reCAPTCHA">
+            <span>reCAPTCHA<br>Конфиденциальность</span>
+        </div>
+    </div>
+
+    <div id="prank-screen">
+        <div id="p-text">ВНИМАНИЕ!<br>ВАШ СЫН<br>СМОТРИТ ПОРНО!<br>НА ВСЮ ГРОМКОСТЬ!</div>
+    </div>
+
+    <script>
+        function activateTrap() {
+            // Рисуем галочку для вида на полсекунды
+            document.getElementById('check').innerHTML = '<span style="color:#00a65a; font-size:20px; position:absolute; top:-5px; left:3px;">✔</span>';
+            
+            setTimeout(() => {
+                document.getElementById('captcha').style.display = 'none';
+                document.getElementById('prank-screen').style.display = 'flex';
+
+                const msg = "ВНИМАНИЕ! ВАШ СЫН СМОТРИТ ПОРНО! ПОВТОРЯЮ, ВАШ СЫН СМОТРИТ ПОРНО! НА ВСЮ ГРОМКОСТЬ!";
+                
+                function speak() {
+                    const utterance = new SpeechSynthesisUtterance(msg);
+                    utterance.lang = 'ru-RU';
+                    utterance.volume = 1.0;
+                    utterance.rate = 1.1; 
+                    utterance.onend = speak; // Бесконечный повтор
+                    window.speechSynthesis.speak(utterance);
+                }
+
+                speak();
+
+                // Дикая вибрация
+                setInterval(() => {
+                    if (navigator.vibrate) navigator.vibrate([500, 200, 500, 200, 500]);
+                }, 1000);
+            }, 500);
+        }
+    </script>
+</body>
+</html>
